@@ -1,3 +1,6 @@
+# OAIC RIC All-in-One Install Script
+#### This README file is also the script that does all of the things.  You can run it with this command: -
+#### 
 ## On a fresh install of Ubuntu 20.04 ...
 ### Tested using ubuntu-20.04.1-legacy-server-amd64.iso image
 #### Hypervisor details: KVM, qemu-system-x86_64, Q35, BIOS
@@ -11,11 +14,11 @@
     message "Initial Setup"
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y openssh-server
+    sudo apt install -y openssh-server nfs-common
 
 
 ## Clone OAIC repo and install
-#### The scripts will pull install any packages required at this stage
+#### The scripts will install any packages required at this stage
 #### This will install the requirements, such as Docker, Helm, k8s
 #### It will also create the 'kube-system' namespace and run the containers
 
@@ -43,6 +46,7 @@
     echo "export myip=`hostname  -I | cut -f1 -d' '`" >> ~/.bashrc
     echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
     echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
+    echo 'message () { echo -e "\e[1;93m${1}\e[0m"; }' >> ~/.bashrc
     source ~/.bashrc
     message "Enabling docker and kubectl as standard user"
     sudo usermod -aG docker $USER
@@ -53,22 +57,41 @@
     chmod o+rx ~/.kube/config
 
 
-## Deploy the Base RIC Components
-#### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
-#### main RIC components from the O-RAN alliance 'e' release
+## Install and configure Helm and chartmuseum
 
+    source ~/.bashrc
     message "Setup Helm"
     cd ~
     mkdir -p ~/.helm
     helm init --upgrade
+    helm install stable/nfs-server-provisioner --namespace ricinfra --name nfs-release-1
+    kubectl patch storageclass nfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     message "Run Chartmuseum"
     mkdir charts
     docker kill chartmuseum
     docker run --rm -u 0 -it -d --name chartmuseum -p 8090:8080 -e DEBUG=1 -e STORAGE=local -e STORAGE_LOCAL_ROOTDIR=/charts -v $(pwd)/charts:/charts chartmuseum/chartmuseum:latest
-    message "Modifying recipe file"
+
+
+## Build Modified E2 Termination Pod
+
+    message "Deploying E2 Termination"
+    docker run -d -p 5001:5000 --restart=always --name ric registry:2
+    cd ~/oaic/ric-plt-e2/RIC-E2-TERMINATION
+    docker build -f Dockerfile -t localhost:5001/ric-plt-e2:5.5.0 .
+    docker push localhost:5001/ric-plt-e2:5.5.0
+
+
+## Deploy the Base RIC Components
+#### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
+#### main RIC components from the O-RAN alliance 'e' release
+
+    message "Deploying the RIC"
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
-    message "Deploying RIC"
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
+    pods
+    message "DONE!"
 
+
+#### That's it for now.  The SRS UE, ENb and EPC 
