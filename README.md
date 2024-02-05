@@ -15,9 +15,9 @@
 
 
 ## Clone OAIC repo and install
-### The scripts will pull install any packages required at this stage
-### This will install the requirements, such as Docker, Helm, k8s
-### It will also create the 'kube-system' namespace and run the containers
+#### The scripts will pull install any packages required at this stage
+#### This will install the requirements, such as Docker, Helm, k8s
+#### It will also create the 'kube-system' namespace and run the containers
 
     message "Clone OAIC repo"
     git clone https://github.com/openaicellular/oaic.git
@@ -30,17 +30,17 @@
 
 
 ## Creature Comforts
-### Set up some useful shortcuts and enable docker and kubectl commands to be run as user
-### 'pods' will list all running pods
-### 'srv' will list services.  Useful for getting the IP and ports of pods
-### 'flushpods' will delete all pods that have failed or been evicted
-### 'myip' is a handy shortcut to get the IP address of the 'host' OS
+#### Set up some useful shortcuts and enable docker and kubectl commands to be run as user
+#### 'pods' will list all running pods
+#### 'srv' will list services.  Useful for getting the IP and ports of pods
+#### 'flushpods' will delete all pods that have failed or been evicted
+#### 'myip' is a handy shortcut to get the IP address of the 'host' OS
 
     message "Modify .bashrc"
     echo 'alias pods="kubectl get pods -A"' >> ~/.bashrc
     echo 'alias srv="kubectl get services -A"' >> ~/.bashrc
     echo 'alias flushpods="kubectl delete pods -A --field-selector=\"status.phase==Failed\""' >> ~/.bashrc
-    echo "alias myip=\"echo \`hostname  -I | cut -f1 -d' '\`\"" >> ~/.bashrc
+    echo "export myip=`hostname  -I | cut -f1 -d' '`" >> ~/.bashrc
     echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
     echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
     source ~/.bashrc
@@ -54,8 +54,8 @@
 
 
 ## Deploy the Base RIC Components
-### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
-### main RIC components from the O-RAN alliance 'e' release
+#### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
+#### main RIC components from the O-RAN alliance 'e' release
 
     message "Setup Helm"
     cd ~
