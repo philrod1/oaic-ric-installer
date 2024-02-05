@@ -75,7 +75,7 @@
 ## Build Modified E2 Termination Pod
 
     message "Deploying E2 Termination"
-    docker run -d -p 5001:5000 --restart=always --name ric registry:2
+    docker run -v /registry-storage:$HOME/registry -d -p 5001:5000 --restart=always --name ric registry:2
     cd ~/oaic/ric-plt-e2/RIC-E2-TERMINATION
     docker build -f Dockerfile -t localhost:5001/ric-plt-e2:5.5.0 .
     docker push localhost:5001/ric-plt-e2:5.5.0
