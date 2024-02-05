@@ -1,4 +1,3 @@
-#!/bin/bash
 ## On a fresh install of Ubuntu 20.04 ...
 ### Tested using ubuntu-20.04.1-legacy-server-amd64.iso image
 #### Hypervisor details: KVM, qemu-system-x86_64, Q35, BIOS
