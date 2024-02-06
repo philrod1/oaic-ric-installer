@@ -1,3 +1,4 @@
+#!/bin/bash -i
 # OAIC RIC All-in-One Install Script
 #### This README file is also the script that does all of the things.  You can run it with this command: -
 #### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash 
@@ -45,11 +46,11 @@
     echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
     echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
     echo 'message () { echo -e "\e[1;93m$1\e[0m"; }' >> ~/.bashrc
+    source ~/.bashrc
 
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
 
-    source ~/.bashrc
     message "Enabling docker and kubectl as standard user"
     sudo usermod -aG docker $USER && newgrp docker
     source ~/.bashrc
@@ -61,7 +62,6 @@
 
 ## Configure Helm and chartmuseum
 
-    source ~/.bashrc
     message "Setup Helm"
     cd ~
     mkdir -p ~/.helm
@@ -71,7 +71,7 @@
 
 
 ## Configure Chart Museum
-    source ~/.bashrc
+
     message "Run Chartmuseum"
     mkdir charts
     docker kill chartmuseum
@@ -80,7 +80,6 @@
 
 ## Build Modified E2 Termination Pod
 
-    source ~/.bashrc
     message "Deploying E2 Termination"
     docker run -v /registry-storage:$HOME/registry -d -p 5001:5000 --restart=always --name ric registry:2
     cd ~/oaic/ric-plt-e2/RIC-E2-TERMINATION
@@ -92,7 +91,6 @@
 #### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
 #### main RIC components from the O-RAN alliance 'e' release
 
-    source ~/.bashrc
     message "Deploying the RIC"
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
@@ -100,8 +98,5 @@
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
     pods
     message "DONE!"
-
-source ~/.bashrc
-message "DONE!"
 
 #### That's it for now.  The SRS UE, ENb and EPC 
