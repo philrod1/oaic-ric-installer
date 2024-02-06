@@ -1,7 +1,6 @@
-#!/bin/bash -i
 # OAIC RIC All-in-One Install Script
 #### This README file is also the script that does all of the things.  You can run it with this command: -
-#### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash 
+#### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash -i
 #### Alternatively, you can click on the 🖉 symbol in Github and copy the raw markdown.
 #### You could also run each section by using the copy option
 
