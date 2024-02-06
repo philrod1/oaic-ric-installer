@@ -32,7 +32,7 @@
     message "Apt Setup"
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y openssh-server nfs-common
+    sudo apt install -y openssh-server nfs-common docker.io
 
 
 ## Clone OAIC repo and install
@@ -40,34 +40,33 @@
 #### This will install the requirements, such as Docker, Helm, k8s
 #### It will also create the 'kube-system' namespace and run the containers
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    message "Clone OAIC repo"
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    git clone https://github.com/openaicellular/oaic.git
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    cd oaic/
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    git submodule update --init --recursive --remote
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    cd RIC-Deployment/tools/k8s/bin
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    message "Deploy kube-system pods"
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    ./gen-cloud-init.sh
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    sudo ./k8s-1node-cloud-init*.sh
-    echo -e "\e[1;96m$BASHPID\e[0m"
+    #echo -e "\e[1;96m$BASHPID\e[0m"
+    #message "Clone OAIC repo"
+    #git clone https://github.com/openaicellular/oaic.git
+    #cd oaic/
+    #git submodule update --init --recursive --remote
+    #cd RIC-Deployment/tools/k8s/bin
+    #message "Deploy kube-system pods"
+    #./gen-cloud-init.sh
+    #sudo ./k8s-1node-cloud-init*.sh
 
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
+    echo -e "\e[1;96m$BASHPID 1\e[0m"
     message "Enabling docker and kubectl as standard user"
+    echo -e "\e[1;96m$BASHPID 2\e[0m"
     sudo usermod -aG docker $USER && newgrp docker
+    echo -e "\e[1;96m$BASHPID 3\e[0m"
     mkdir -p ~/.kube
+    echo -e "\e[1;96m$BASHPID 4\e[0m"
     sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
+    echo -e "\e[1;96m$BASHPID 5\e[0m"
     sudo chown -R $USER:$USER ~/.kube
+    echo -e "\e[1;96m$BASHPID 6\e[0m"
     chmod o+rx ~/.kube/config
+    echo -e "\e[1;96m$BASHPID 7\e[0m"
+    exit
 
 
 ## Configure Helm and chartmuseum
