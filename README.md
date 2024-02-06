@@ -13,6 +13,7 @@
 
 ## Setup Useful Aliases
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message () { echo -e "\e[1;93m$1\e[0m"; }
     message "Modify .bashrc"
     export myip=`hostname  -I | cut -f1 -d' '`
@@ -27,6 +28,7 @@
 
 ## Apt Setup
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Apt Setup"
     sudo apt update
     sudo apt upgrade -y
@@ -38,6 +40,7 @@
 #### This will install the requirements, such as Docker, Helm, k8s
 #### It will also create the 'kube-system' namespace and run the containers
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Clone OAIC repo"
     git clone https://github.com/openaicellular/oaic.git
     cd oaic/
@@ -50,6 +53,7 @@
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Enabling docker and kubectl as standard user"
     sudo usermod -aG docker $USER && newgrp docker
     mkdir -p ~/.kube
@@ -60,6 +64,7 @@
 
 ## Configure Helm and chartmuseum
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Setup Helm"
     cd ~
     mkdir -p ~/.helm
@@ -70,6 +75,7 @@
 
 ## Configure Chart Museum
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Run Chartmuseum"
     mkdir charts
     docker kill chartmuseum
@@ -78,6 +84,7 @@
 
 ## Build Modified E2 Termination Pod
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Deploying E2 Termination"
     docker run -v /registry-storage:$HOME/registry -d -p 5001:5000 --restart=always --name ric registry:2
     cd ~/oaic/ric-plt-e2/RIC-E2-TERMINATION
@@ -89,6 +96,7 @@
 #### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
 #### main RIC components from the O-RAN alliance 'e' release
 
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Deploying the RIC using the IP address $myip"
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
