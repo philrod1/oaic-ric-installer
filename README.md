@@ -1,6 +1,8 @@
 # OAIC RIC All-in-One Install Script
 #### This README file is also the script that does all of the things.  You can run it with this command: -
 #### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash 
+#### Alternatively, you can click on the 🖉 symbol in Github and copy the raw markdown.
+#### You could also run each section by using the copy option. 
 ## On a fresh install of Ubuntu 20.04 ...
 ### Tested using ubuntu-20.04.1-legacy-server-amd64.iso image
 #### Hypervisor details: KVM, qemu-system-x86_64, Q35, BIOS
