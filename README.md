@@ -1,6 +1,6 @@
 # OAIC RIC All-in-One Install Script
 #### This README file is also the script that does all of the things.  You can run it with this command: -
-#### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash -i
+#### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash
 #### Alternatively, you can click on the 🖉 symbol in Github and copy the raw markdown.
 #### You could also run each section by using the copy option
 
@@ -11,10 +11,23 @@
 #### Host system: Ubuntu 23.10, Kernel 6.5.0, Intel i7-1370P, 64G RAM
 
 
-## Initial Setup
+## Setup Useful Aliases
 
     message () { echo -e "\e[1;93m$1\e[0m"; }
-    message "Initial Setup"
+    message "Modify .bashrc"
+    export myip=`hostname  -I | cut -f1 -d' '`
+    echo 'alias pods="kubectl get pods -A"' >> ~/.bashrc
+    echo 'alias srv="kubectl get services -A"' >> ~/.bashrc
+    echo 'alias flushpods="kubectl delete pods -A --field-selector=\"status.phase==Failed\""' >> ~/.bashrc
+    echo "export myip=`hostname  -I | cut -f1 -d' '`" >> ~/.bashrc
+    echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
+    echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
+    echo 'message () { echo -e "\e[1;93m$1\e[0m"; }' >> ~/.bashrc
+
+
+## Apt Setup
+
+    message "Apt Setup"
     sudo apt update
     sudo apt upgrade -y
     sudo apt install -y openssh-server nfs-common
@@ -32,27 +45,13 @@
     cd RIC-Deployment/tools/k8s/bin
     message "Deploy kube-system pods"
     ./gen-cloud-init.sh
-    sudo ./k8s-1node-cloud-init*.sh
-
-
-## Setup Useful Aliases
-
-    message "Modify .bashrc"
-    echo 'alias pods="kubectl get pods -A"' >> ~/.bashrc
-    echo 'alias srv="kubectl get services -A"' >> ~/.bashrc
-    echo 'alias flushpods="kubectl delete pods -A --field-selector=\"status.phase==Failed\""' >> ~/.bashrc
-    echo "export myip=`hostname  -I | cut -f1 -d' '`" >> ~/.bashrc
-    echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
-    echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
-    echo 'message () { echo -e "\e[1;93m$1\e[0m"; }' >> ~/.bashrc
-    source ~/.bashrc
+    sudo bash ./k8s-1node-cloud-init*.sh
 
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
 
     message "Enabling docker and kubectl as standard user"
     sudo usermod -aG docker $USER && newgrp docker
-    source ~/.bashrc
     mkdir -p ~/.kube
     sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
     sudo chown -R $USER:$USER ~/.kube
@@ -90,12 +89,13 @@
 #### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
 #### main RIC components from the O-RAN alliance 'e' release
 
-    message "Deploying the RIC"
+    message "Deploying the RIC using the IP address $myip"
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
     pods
     message "DONE!"
+    message "Run 'source ~/.bashrc' to enable the handy shortcuts."
 
 #### That's it for now.  The SRS UE, ENb and EPC 
