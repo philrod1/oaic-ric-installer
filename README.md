@@ -94,8 +94,9 @@
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
-    pods
     message "DONE!"
-    message "Run 'su - $USER' or re-login to finish."
+    message "Run 'su - $USER' or re-login to finish up."
+    message "After that, you can type 'pods' to check the status of the containers."
 
-#### That's it for now.  The SRS UE, ENb and EPC 
+#### That's it for now.  Just re-login and wait for the pods to start.
+#### The SRS UE, ENb and EPC components will be added later. 
