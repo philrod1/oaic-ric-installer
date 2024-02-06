@@ -48,7 +48,7 @@
     cd RIC-Deployment/tools/k8s/bin
     message "Deploy kube-system pods"
     ./gen-cloud-init.sh
-    sudo bash ./k8s-1node-cloud-init*.sh
+    sudo bash ./k8s-1node-cloud-init*.sh && exit
 
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
