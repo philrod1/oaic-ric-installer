@@ -2,8 +2,9 @@
 #### This README file is also the script that does all of the things.  You can run it with this command: -
 #### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash 
 #### Alternatively, you can click on the 🖉 symbol in Github and copy the raw markdown.
-#### You could also run each section by using the copy option. 
-## On a fresh install of Ubuntu 20.04 ...
+#### You could also run each section by using the copy option
+
+## Start with a fresh install of Ubuntu 20.04
 ### Tested using ubuntu-20.04.1-legacy-server-amd64.iso image
 #### Hypervisor details: KVM, qemu-system-x86_64, Q35, BIOS
 #### Guest system: 4 cores, 16G RAM, 150G storage, default networking (NAT)
@@ -34,12 +35,7 @@
     sudo ./k8s-1node-cloud-init*.sh
 
 
-## Creature Comforts
-#### Set up some useful shortcuts and enable docker and kubectl commands to be run as user
-#### 'pods' will list all running pods
-#### 'srv' will list services.  Useful for getting the IP and ports of pods
-#### 'flushpods' will delete all pods that have failed or been evicted
-#### 'myip' is a handy shortcut to get the IP address of the 'host' OS
+## Setup Useful Aliases
 
     message "Modify .bashrc"
     echo 'alias pods="kubectl get pods -A"' >> ~/.bashrc
@@ -49,6 +45,10 @@
     echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
     echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
     echo 'message () { echo -e "\e[1;93m$1\e[0m"; }' >> ~/.bashrc
+
+
+## Configure 'docker' and 'kubectl' For Non-root User 
+
     source ~/.bashrc
     message "Enabling docker and kubectl as standard user"
     sudo usermod -aG docker $USER && newgrp docker
@@ -59,7 +59,7 @@
     chmod o+rx ~/.kube/config
 
 
-## Install and configure Helm and chartmuseum
+## Configure Helm and chartmuseum
 
     source ~/.bashrc
     message "Setup Helm"
@@ -68,6 +68,10 @@
     helm init --upgrade
     helm install stable/nfs-server-provisioner --namespace ricinfra --name nfs-release-1
     kubectl patch storageclass nfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+
+## Configure Chart Museum
+    source ~/.bashrc
     message "Run Chartmuseum"
     mkdir charts
     docker kill chartmuseum
@@ -76,6 +80,7 @@
 
 ## Build Modified E2 Termination Pod
 
+    source ~/.bashrc
     message "Deploying E2 Termination"
     docker run -v /registry-storage:$HOME/registry -d -p 5001:5000 --restart=always --name ric registry:2
     cd ~/oaic/ric-plt-e2/RIC-E2-TERMINATION
@@ -87,6 +92,7 @@
 #### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
 #### main RIC components from the O-RAN alliance 'e' release
 
+    source ~/.bashrc
     message "Deploying the RIC"
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
@@ -95,5 +101,7 @@
     pods
     message "DONE!"
 
+source ~/.bashrc
+message "DONE!"
 
 #### That's it for now.  The SRS UE, ENb and EPC 
