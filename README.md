@@ -46,11 +46,11 @@
     echo "export myip=`hostname  -I | cut -f1 -d' '`" >> ~/.bashrc
     echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
     echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
-    echo 'message () { echo -e "\e[1;93m${1}\e[0m"; }' >> ~/.bashrc
+    echo 'message () { echo -e "\e[1;93m$1\e[0m"; }' >> ~/.bashrc
     source ~/.bashrc
     message "Enabling docker and kubectl as standard user"
-    sudo usermod -aG docker $USER
-    newgrp docker
+    sudo usermod -aG docker $USER && newgrp docker
+    source ~/.bashrc
     mkdir -p ~/.kube
     sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
     sudo chown -R $USER:$USER ~/.kube
