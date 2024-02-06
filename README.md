@@ -10,7 +10,7 @@
 
 ## Initial Setup
 
-    message () { echo -e "\e[1;93m${1}\e[0m"; }
+    message () { echo -e "\e[1;93m$1\e[0m"; }
     message "Initial Setup"
     sudo apt update
     sudo apt upgrade -y
