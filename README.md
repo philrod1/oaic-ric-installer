@@ -42,13 +42,21 @@
 
     echo -e "\e[1;96m$BASHPID\e[0m"
     message "Clone OAIC repo"
+    echo -e "\e[1;96m$BASHPID\e[0m"
     git clone https://github.com/openaicellular/oaic.git
+    echo -e "\e[1;96m$BASHPID\e[0m"
     cd oaic/
+    echo -e "\e[1;96m$BASHPID\e[0m"
     git submodule update --init --recursive --remote
+    echo -e "\e[1;96m$BASHPID\e[0m"
     cd RIC-Deployment/tools/k8s/bin
+    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Deploy kube-system pods"
+    echo -e "\e[1;96m$BASHPID\e[0m"
     ./gen-cloud-init.sh
-    sudo bash ./k8s-1node-cloud-init*.sh && exit
+    echo -e "\e[1;96m$BASHPID\e[0m"
+    sudo ./k8s-1node-cloud-init*.sh
+    echo -e "\e[1;96m$BASHPID\e[0m"
 
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
