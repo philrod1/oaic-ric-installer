@@ -13,9 +13,8 @@
 
 ## Setup Useful Aliases
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
     message () { echo -e "\e[1;93m$1\e[0m"; }
-    message "Modify .bashrc"
+    message "Modifying .bashrc"
     export myip=`hostname  -I | cut -f1 -d' '`
     echo 'alias pods="kubectl get pods -A"' >> ~/.bashrc
     echo 'alias srv="kubectl get services -A"' >> ~/.bashrc
@@ -23,55 +22,44 @@
     echo "export myip=`hostname  -I | cut -f1 -d' '`" >> ~/.bashrc
     echo 'export KUBECONFIG="${HOME}/.kube/config"' >> ~/.bashrc
     echo 'export HELM_HOME="${HOME}/.helm"' >> ~/.bashrc
-    echo 'message () { echo -e "\e[1;93m$1\e[0m"; }' >> ~/.bashrc
 
 
-## Apt Setup
+## Refresh apt
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    message "Apt Setup"
+    message "Refresh apt"
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y openssh-server nfs-common docker.io
+    sudo apt install -y openssh-server nfs-common
 
 
 ## Clone OAIC repo and install
-#### The scripts will install any packages required at this stage
-#### This will install the requirements, such as Docker, Helm, k8s
-#### It will also create the 'kube-system' namespace and run the containers
 
-    #echo -e "\e[1;96m$BASHPID\e[0m"
-    #message "Clone OAIC repo"
-    #git clone https://github.com/openaicellular/oaic.git
-    #cd oaic/
-    #git submodule update --init --recursive --remote
-    #cd RIC-Deployment/tools/k8s/bin
-    #message "Deploy kube-system pods"
-    #./gen-cloud-init.sh
-    #sudo ./k8s-1node-cloud-init*.sh
+    message "Clone OAIC repo"
+    git clone https://github.com/openaicellular/oaic.git
+    cd oaic/
+    git submodule update --init --recursive --remote
+
+
+## Deploy kube-system Pods
+
+    message "Deploy kube-system pods"
+    cd RIC-Deployment/tools/k8s/bin
+    ./gen-cloud-init.sh
+    sudo ./k8s-1node-cloud-init*.sh
 
 
 ## Configure 'docker' and 'kubectl' For Non-root User 
 
-    echo -e "\e[1;96m$BASHPID 1\e[0m"
     message "Enabling docker and kubectl as standard user"
-    echo -e "\e[1;96m$BASHPID 2\e[0m"
-    sudo usermod -aG docker $USER && newgrp docker && exit
-    groups
-    echo -e "\e[1;96m$BASHPID 3\e[0m"
+    sudo usermod -aG docker $USER
     mkdir -p ~/.kube
-    echo -e "\e[1;96m$BASHPID 4\e[0m"
     sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
-    echo -e "\e[1;96m$BASHPID 5\e[0m"
     sudo chown -R $USER:$USER ~/.kube
-    echo -e "\e[1;96m$BASHPID 6\e[0m"
     chmod o+rx ~/.kube/config
-    echo -e "\e[1;96m$BASHPID 7\e[0m"
 
 
-## Configure Helm and chartmuseum
+## Configure Helm
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Setup Helm"
     cd ~
     mkdir -p ~/.helm
@@ -80,10 +68,9 @@
     kubectl patch storageclass nfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 
-## Configure Chart Museum
+## Configure ChartMuseum
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    message "Run Chartmuseum"
+    message "Configure ChartMuseum"
     mkdir charts
     docker kill chartmuseum
     docker run --rm -u 0 -it -d --name chartmuseum -p 8090:8080 -e DEBUG=1 -e STORAGE=local -e STORAGE_LOCAL_ROOTDIR=/charts -v $(pwd)/charts:/charts chartmuseum/chartmuseum:latest
@@ -91,7 +78,6 @@
 
 ## Build Modified E2 Termination Pod
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
     message "Deploying E2 Termination"
     docker run -v /registry-storage:$HOME/registry -d -p 5001:5000 --restart=always --name ric registry:2
     cd ~/oaic/ric-plt-e2/RIC-E2-TERMINATION
@@ -103,14 +89,13 @@
 #### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
 #### main RIC components from the O-RAN alliance 'e' release
 
-    echo -e "\e[1;96m$BASHPID\e[0m"
-    message "Deploying the RIC using the IP address $myip"
+    message "Deploying the RIC"
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
     pods
     message "DONE!"
-    message "Run 'source ~/.bashrc' to enable the handy shortcuts."
+    message "Run 'su - $USER' or re-login to finish."
 
 #### That's it for now.  The SRS UE, ENb and EPC 
