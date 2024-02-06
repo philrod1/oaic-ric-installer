@@ -57,7 +57,7 @@
     message "Enabling docker and kubectl as standard user"
     echo -e "\e[1;96m$BASHPID 2\e[0m"
     sudo usermod -aG docker $USER && newgrp docker && exit
-    sleep 10
+    groups
     echo -e "\e[1;96m$BASHPID 3\e[0m"
     mkdir -p ~/.kube
     echo -e "\e[1;96m$BASHPID 4\e[0m"
