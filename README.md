@@ -56,7 +56,8 @@
     echo -e "\e[1;96m$BASHPID 1\e[0m"
     message "Enabling docker and kubectl as standard user"
     echo -e "\e[1;96m$BASHPID 2\e[0m"
-    sudo usermod -aG docker $USER && newgrp docker
+    sudo usermod -aG docker $USER && newgrp docker && exit
+    sleep 10
     echo -e "\e[1;96m$BASHPID 3\e[0m"
     mkdir -p ~/.kube
     echo -e "\e[1;96m$BASHPID 4\e[0m"
@@ -66,7 +67,6 @@
     echo -e "\e[1;96m$BASHPID 6\e[0m"
     chmod o+rx ~/.kube/config
     echo -e "\e[1;96m$BASHPID 7\e[0m"
-    exit
 
 
 ## Configure Helm and chartmuseum
