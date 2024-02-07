@@ -51,7 +51,9 @@
 ## Configure 'docker' and 'kubectl' For Non-root User 
 
     message "Enabling docker and kubectl as standard user"
-    sudo usermod -aG docker $USER
+    sudo usermod -aG docker $USER && newgrp docker
+    message () { echo -e "\e[1;93m$1\e[0m"; }
+    export myip=`hostname  -I | cut -f1 -d' '`
     mkdir -p ~/.kube
     sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
     sudo chown -R $USER:$USER ~/.kube
