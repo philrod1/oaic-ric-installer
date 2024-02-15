@@ -100,5 +100,13 @@
     message "Run 'su - $USER' or re-login to finish up."
     message "After that, you can type 'pods' to check the status of the containers."
 
+
+## Addding some more useful aliases for xApp deployment
+
+    message "Useful aliases for xApp deployment"
+    export KONG_PROXY=`sudo kubectl get svc -n ricplt -l app.kubernetes.io/name=kong -o jsonpath='{.items[0].spec.clusterIP}'`
+    export APPMGR_HTTP=`sudo kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-appmgr-http -o jsonpath='{.items[0].spec.clusterIP}'`
+    export ONBOARDER_HTTP=`sudo kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-xapp-onboarder-http -o jsonpath='{.items[0].spec.clusterIP}'`
+
 #### That's it for now.  Just re-login and wait for the pods to start.
-#### The SRS UE, ENb and EPC components will be added later. 
+#### To install the SRS UE, ENb and EPC components, use this guide: https://github.com/philrod1/srsRAN-installer
