@@ -29,7 +29,7 @@
     message "Refresh apt"
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y openssh-server nfs-common
+    sudo apt install -y openssh-server nfs-common nginx
 
 
 ## Clone OAIC repo and install
@@ -97,16 +97,47 @@
     sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
     message "DONE!"
-    message "Run 'su - $USER' or re-login to finish up."
-    message "After that, you can type 'pods' to check the status of the containers."
+
 
 
 ## Addding some more useful aliases for xApp deployment
 
     message "Useful aliases for xApp deployment"
+    echo 'export E2MGR_HTTP=`kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-e2mgr-http -o jsonpath="{.items[0].spec.clusterIP}"`' >> ~/.bashrc
     echo 'export KONG_PROXY=`kubectl get svc -n ricplt -l app.kubernetes.io/name=kong -o jsonpath="{.items[0].spec.clusterIP}"`' >> ~/.bashrc
     echo 'export APPMGR_HTTP=`kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-appmgr-http -o jsonpath="{.items[0].spec.clusterIP}"`' >> ~/.bashrc
     echo 'export ONBOARDER_HTTP=`kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-xapp-onboarder-http -o jsonpath="{.items[0].spec.clusterIP}"`' >> ~/.bashrc
+    source ~/.bashrc
+
+
+## Install and configure nginx
+
+    message "Installing nginx"
+    sudo apt install -y openssh-server nfs-common nginx
+    cd /etc/nginx/sites-enabled
+    sudo unlink default
+    cd
+    mkdir xapp_config_files
+    sudo chown $USER:www-data xapp_config_files
+    cd /etc/nginx/conf.d
+    sudo curl -o xapp_configs.local.conf https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/xapp_configs.local.conf
+    sudo sed -i "s/\$USER/$USER/g" xapp_configs.local.conf
+    sudo service nginx restart
+    
+
+## Onboard the KPIMON xApp
+
+    message "Onbaording the KPIMON xApp
+    cp ~/oaic/ric-scp-kpimon/scp-kpimon-config-file.json ~/xapp_config_files/
+    cd ~/oaic/ric-scp-kpimon/
+    docker build . -t oaic.local:5008/scp-kpimon:1.0.1
+    curl -L -X POST "http://$KONG_PROXY:32080/onboard/api/v1/onboard/download" --header 'Content-Type: application/json' --data-raw "{\"config-file.json_url\":\"http://$myip:5010/scp-kpimon-config-file.json\"}"
+    curl -L -X POST "http://$KONG_PROXY:32080/appmgr/ric/v1/xapps" --header 'Content-Type: application/json' --data-raw '{"xappName": "scp-kpimon"}'
+    
 
 #### That's it for now.  Just re-login and wait for the pods to start.
+
+    message "Run 'su - $USER' or re-login to finish up."
+    message "After that, you can type 'pods' to check the status of the containers."
+    
 #### To install the SRS UE, ENb and EPC components, use this guide: https://github.com/philrod1/srsRAN-installer
