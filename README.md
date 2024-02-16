@@ -127,7 +127,7 @@
 
 ## Onboard the KPIMON xApp
 
-    message "Onbaording the KPIMON xApp
+    message "Onbaording the KPIMON xApp"
     cp ~/oaic/ric-scp-kpimon/scp-kpimon-config-file.json ~/xapp_config_files/
     cd ~/oaic/ric-scp-kpimon/
     docker build . -t oaic.local:5008/scp-kpimon:1.0.1
