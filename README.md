@@ -128,8 +128,10 @@
 ## Onboard the KPIMON xApp
 
     message "Onbaording the KPIMON xApp"
-    cp ~/oaic/ric-scp-kpimon/scp-kpimon-config-file.json ~/xapp_config_files/
+    export KONG_PROXY=`kubectl get svc -n ricplt -l app.kubernetes.io/name=kong -o jsonpath="{.items[0].spec.clusterIP}"`
     cd ~/oaic/ric-scp-kpimon/
+    cp ~/oaic/ric-scp-kpimon/scp-kpimon-config-file.json ~/xapp_config_files/
+    tmp="$(jq '.containers[0].image.registry = "oaic.local:5008"' ~/xapp_config_files/scp-kpimon-config-file.json)" && echo -E "${tmp}" > ~/xapp_config_files/scp-kpimon-config-file.json
     docker build . -t oaic.local:5008/scp-kpimon:1.0.1
     curl -L -X POST "http://$KONG_PROXY:32080/onboard/api/v1/onboard/download" --header 'Content-Type: application/json' --data-raw "{\"config-file.json_url\":\"http://$myip:5010/scp-kpimon-config-file.json\"}"
     curl -L -X POST "http://$KONG_PROXY:32080/appmgr/ric/v1/xapps" --header 'Content-Type: application/json' --data-raw '{"xappName": "scp-kpimon"}'
