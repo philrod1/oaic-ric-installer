@@ -29,7 +29,7 @@
     message "Refresh apt"
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y openssh-server nfs-common nginx
+    sudo apt install -y openssh-server nfs-common nginx python3-pip
 
 
 ## Clone OAIC repo and install
