@@ -32,6 +32,12 @@
     sudo apt install -y openssh-server nfs-common nginx python3-pip
 
 
+## Install Ansible
+
+    message "Install Ansible"
+    sudo python3 -m pip install ansible
+
+
 ## Clone OAIC repo and install
 
     message "Clone OAIC repo"
