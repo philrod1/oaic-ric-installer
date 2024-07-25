@@ -29,7 +29,7 @@
     message "Refresh apt"
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y openssh-server nfs-common nginx python3-pip
+    sudo apt install -y openssh-server nfs-common nginx python3-pip cmake
 
 
 ## Install Ansible
