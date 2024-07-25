@@ -93,31 +93,6 @@
     docker push localhost:5001/ric-plt-e2:5.5.0
 
 
-## Build Modified RMR Library
-
-    message "Build RMR Library"
-    mkdir code
-    cd ~/code
-    git clone https://github.com/philrod1/ric-plt-lib-rmr.git
-    cd ric-plt-lib-rmr
-    mkdir build
-    cd build
-    cmake ..
-    make package
-    cmake .. -DDEV_PKG=1
-    make package
-
-## Build Modified RMR Routing Manager
-
-    message "Building RMR Routing Manager"
-    cd ~/code
-    git clone https://github.com/philrod1/ric-plt-rtmgr.git
-    cd ric-plt-rtmgr
-    cp ../ric-plt-lib-rmr/build/*.deb .
-    docker build -f Dockerfile -t localhost:5001/ric-plt-rtmgr:0.9.3 .
-    docker push localhost:5001/ric-plt-rtmgr:0.9.3    
-
-
 ## Deploy the Base RIC Components
 #### This will create the 'ricinfra' and 'ricplt' namespaces and deploy all the
 #### main RIC components from the O-RAN alliance 'e' release
@@ -125,8 +100,8 @@
     message "Deploying the RIC"
     cd ~/oaic/RIC-Deployment/bin
     wget
-    sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
-    sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
+    sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
+    sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
     . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
     message "DONE!"
 
