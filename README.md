@@ -1,6 +1,6 @@
 # OAIC RIC All-in-One Install Script
 #### This README file is also the script that does all of the things.  You can run it with this command: -
-#### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/README.md | bash
+#### curl -L https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/README.md | bash
 #### Alternatively, you can click on the 🖉 symbol in Github and copy the raw markdown.
 #### You could also run each section by using the copy option
 
@@ -36,6 +36,23 @@
 
     message "Install Ansible"
     sudo python3 -m pip install ansible
+
+
+## Install and configure nginx
+
+    message "Installing nginx"
+    sudo apt install -y openssh-server nfs-common nginx
+    cd /etc/nginx/sites-enabled
+    sudo unlink default
+    cd
+    mkdir xapp_config_files
+    mkdir rmr
+    sudo chown $USER:www-data xapp_config_files
+    cd /etc/nginx/conf.d
+    sudo curl -o xapp_configs.local.conf https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/xapp_configs.local.conf
+    sudo curl -o rmr https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/example_recipe_oran_e_release_phil.yaml
+    sudo sed -i "s/\$USER/$USER/g" xapp_configs.local.conf
+    sudo service nginx restart
 
 
 ## Clone OAIC repo and install
@@ -106,6 +123,8 @@
     make package
     cmake .. -DDEV_PKG=1
     make package
+    cp *.deb ~/rmr/
+
 
 ## Build Modified RMR Routing Manager
 
@@ -113,9 +132,9 @@
     cd ~/code
     git clone https://github.com/philrod1/ric-plt-rtmgr.git
     cd ric-plt-rtmgr
-    cp ../ric-plt-lib-rmr/build/*.deb .
+    cp ~/rmr/*.deb ./
     docker build -f Dockerfile -t localhost:5001/ric-plt-rtmgr:0.9.3 .
-    docker push localhost:5001/ric-plt-rtmgr:0.9.3    
+    docker push localhost:5001/ric-plt-rtmgr:0.9.3
 
 
 ## Deploy the Base RIC Components
@@ -124,12 +143,10 @@
 
     message "Deploying the RIC"
     cd ~/oaic/RIC-Deployment/bin
-    wget
-    sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
-    sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified.yaml
-    . ./deploy-ric-platform ../RECIPE_EXAMPLE/PLATFORM/example_recipe_oran_e_release_modified_e2.yaml
+    sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ~/rmr/example_recipe_oran_e_release_phil.yaml
+    sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ~/rmr/example_recipe_oran_e_release_phil.yaml
+    . ./deploy-ric-platform ~/rmr/example_recipe_oran_e_release_phil.yaml
     message "DONE!"
-
 
 
 ## Addding some more useful aliases for xApp deployment
@@ -141,21 +158,6 @@
     echo 'export ONBOARDER_HTTP=`kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-xapp-onboarder-http -o jsonpath="{.items[0].spec.clusterIP}"`' >> ~/.bashrc
     echo 'export E2TERM=`kubectl get svc -n ricplt --field-selector metadata.name=service-ricplt-e2term-sctp-alpha -o jsonpath="{.items[0].spec.clusterIP}"`' >> ~/.bashrc
     source ~/.bashrc
-
-
-## Install and configure nginx
-
-    message "Installing nginx"
-    sudo apt install -y openssh-server nfs-common nginx
-    cd /etc/nginx/sites-enabled
-    sudo unlink default
-    cd
-    mkdir xapp_config_files
-    sudo chown $USER:www-data xapp_config_files
-    cd /etc/nginx/conf.d
-    sudo curl -o xapp_configs.local.conf https://raw.githubusercontent.com/philrod1/oaic-ric-installer/master/xapp_configs.local.conf
-    sudo sed -i "s/\$USER/$USER/g" xapp_configs.local.conf
-    sudo service nginx restart
     
 
 ## Onboard the KPIMON xApp
