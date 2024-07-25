@@ -46,11 +46,9 @@
     sudo unlink default
     cd
     mkdir xapp_config_files
-    mkdir rmr
     sudo chown $USER:www-data xapp_config_files
     cd /etc/nginx/conf.d
     sudo curl -o xapp_configs.local.conf https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/xapp_configs.local.conf
-    sudo curl -o rmr https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/example_recipe_oran_e_release_phil.yaml
     sudo sed -i "s/\$USER/$USER/g" xapp_configs.local.conf
     sudo service nginx restart
 
@@ -114,6 +112,7 @@
 ## Build Modified RMR Library
 
     message "Build RMR Library"
+    cd
     mkdir code
     cd ~/code
     git clone https://github.com/philrod1/ric-plt-lib-rmr.git
@@ -124,6 +123,7 @@
     make package
     cmake .. -DDEV_PKG=1
     make package
+    mkdir ~/rmr
     cp *.deb ~/rmr/
 
 
@@ -143,6 +143,9 @@
 #### main RIC components from the O-RAN alliance 'e' release
 
     message "Deploying the RIC"
+    cd
+    cd rmr
+    wget https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/example_recipe_oran_e_release_phil.yaml
     cd ~/oaic/RIC-Deployment/bin
     sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ~/rmr/example_recipe_oran_e_release_phil.yaml
     sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ~/rmr/example_recipe_oran_e_release_phil.yaml
