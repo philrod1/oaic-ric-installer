@@ -58,6 +58,7 @@
 ## Clone OAIC repo and install
 
     message "Clone OAIC repo"
+    cd
     git clone https://github.com/openaicellular/oaic.git
     cd oaic/
     git submodule update --init --recursive --remote
