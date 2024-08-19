@@ -148,8 +148,8 @@
     cd rmr
     wget https://raw.githubusercontent.com/philrod1/oaic-ric-installer/custom-rmr/example_recipe_oran_e_release_phil.yaml
     cd ~/oaic/RIC-Deployment/bin
-    sed -i 's/ricip: "[^"]*"/ricip: "$myip"/g' ~/rmr/example_recipe_oran_e_release_phil.yaml
-    sed -i 's/auxip: "[^"]*"/ricip: "$myip"/g' ~/rmr/example_recipe_oran_e_release_phil.yaml
+    sed -i "s/ricip: \"[^\"]*\"/ricip: \"$myip\"/g" ~/rmr/example_recipe_oran_e_release_phil.yaml
+    sed -i "s/auxip: \"[^\"]*\"/auxip: \"$myip\"/g" ~/rmr/example_recipe_oran_e_release_phil.yaml
     . ./deploy-ric-platform ~/rmr/example_recipe_oran_e_release_phil.yaml
     message "DONE!"
 
